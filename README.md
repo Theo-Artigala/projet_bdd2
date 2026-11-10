@@ -86,13 +86,24 @@ filtrera les lignes.
 - **RG2** : le prix de chaque ordre (achat / vente) est imposé par le serveur (dernière cotation).
 - **RG3** : chaque ordre met à jour la position (quantité, coût) ; à quantité nulle elle est fermée.
   Le PnL réalisé n'est pas stocké : c'est la somme de `montant − cout_vendu` des ventes.
-- **RG4** : pas d'ordre sur un token suspendu.
+- **RG4** : pas d'ordre sur un token suspendu ou mort.
 - **RG5** : une seule position ouverte par joueur et par token (racheter la renforce).
 - **RG6** : stop loss sous le prix actuel, take profit au-dessus.
-- **RG7** : à chaque nouvelle cotation, les positions qui touchent leur SL / TP sont vendues à 100 %.
+- **RG7** : à chaque nouvelle cotation, les positions qui touchent leur SL / TP sont vendues du pourcentage choisi (100 % par défaut) ; s'il reste des tokens, ce SL / TP est retiré.
+- **RG8** : rug — un token peut s'effondrer d'environ −90 % en quelques secondes ; à la fin, les positions encore ouvertes sont liquidées (origine `rug`) et le token passe `mort`.
+- **RG9** : il y a toujours au moins 5 tokens vivants ; le moteur en fait naître de nouveaux (jusqu'à 8).
 
-## Prix aléatoires
+## Simulation du marché (`lib/dao/memoire/marche.js`)
 
-Chaque seconde : `prix = prix × e^(σ·Z)` avec Z tiré d'une loi normale (Box-Muller) et σ la volatilité du token.
-0,6 % de chance par seconde d'un saut (pump ou dump) de 15 à 50 % en log, et un léger rappel si le token
-s'éloigne trop de son prix de départ (÷20 ou ×50).
+Chaque seconde, pour chaque token actif :
+
+- **Phase** : le token passe au hasard d'une phase à l'autre (calme ×0,3, normal ×1, frénésie ×3 sur la volatilité ; le volume suit : ×0,25, ×1, ×5).
+- **Prix** : `prix = prix × e^(σ·Z)` avec Z tiré d'une loi normale (Box-Muller) et σ = volatilité du token × phase ;
+  de temps en temps un saut (pump ou dump) de 15 à 50 % en log, plus fréquent en frénésie ; léger rappel si le token
+  s'éloigne trop de son prix de départ (÷20 ou ×50).
+- **Volume** : le « reste du marché » échange un montant aléatoire qui dépend de la phase et grimpe quand le prix bouge fort ;
+  les ordres des joueurs s'y ajoutent.
+- **Rug** : probabilité ≈ 1,1 × 10⁻⁴ par seconde (doublée en frénésie), soit environ 1 token sur 3 qui meurt dans l'heure.
+  Le prix chute vers 10 % de sa valeur en 5 secondes, puis les positions sont liquidées et le token est mort.
+- **Naissance** : nom généré (« Turbo Frog », « Spicy Waffle »…), volatilité de 0,8 % à 4 % par seconde, prix de départ de 0,001 à ~3 000,
+  lancement en frénésie pendant 2 à 4 minutes.

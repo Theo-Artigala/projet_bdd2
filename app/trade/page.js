@@ -40,7 +40,10 @@ function Trade() {
   const [toast, setToast] = useState('');
 
   const { data: tokens } = usePoll('/api/tokens', 1000);
-  const idActif = tokenId ?? tokens?.[0]?.id ?? null;
+  const vivants = (tokens || []).filter((t) => t.statut !== 'mort');
+  // cimetière : les 6 derniers tokens morts
+  const morts = (tokens || []).filter((t) => t.statut === 'mort').sort((a, b) => b.date_mort - a.date_mort).slice(0, 6);
+  const idActif = tokenId ?? vivants[0]?.id ?? null;
   const token = tokens?.find((t) => t.id === idActif);
   const { data: graphique } = usePoll(idActif ? `/api/tokens/${idActif}/candles?interval=${intervalle}` : null, 1000);
   const { data: positions, refresh: refreshPositions } = usePoll(joueur ? '/api/positions' : null, 1000);
@@ -87,17 +90,15 @@ function Trade() {
   return (
     <div className="trade">
       <aside className="tokens">
-        {(tokens || []).map((t) => (
-          <div key={t.id} className={'token-row' + (t.id === idActif ? ' active' : '')} onClick={() => setTokenId(t.id)}>
-            <div>
-              <span className="sym">{t.symbole}</span>
-              {t.statut === 'suspendu' && <span className="tag-susp">SUSPENDU</span>}
-            </div>
-            <div className="px num">{fmtPrix(t.prix)}</div>
-            <div className="name">{t.nom}</div>
-            <div className={'chg num ' + cls(t.variation)}>{fmtPct(t.variation)}</div>
-          </div>
-        ))}
+        <div className="token-list">
+          {vivants.map((t) => (
+            <LigneToken key={t.id} t={t} actif={t.id === idActif} onClick={() => setTokenId(t.id)} />
+          ))}
+          {morts.length > 0 && <div className="cimetiere">💀 Cimetière</div>}
+          {morts.map((t) => (
+            <LigneToken key={t.id} t={t} actif={t.id === idActif} onClick={() => setTokenId(t.id)} />
+          ))}
+        </div>
         <FilActivite moi={user.pseudo} />
       </aside>
 
@@ -113,6 +114,7 @@ function Trade() {
             <span className="muted">
               ATH <span className="num" style={{ color: 'var(--ath)' }}>{fmtPrix(token.ath)}</span>
             </span>
+            {token.phase && <span className={'phase phase-' + token.phase}>{PHASES[token.phase]}</span>}
             <div className="intervals">
               {INTERVALLES.map((i) => (
                 <button key={i.v} className={i.v === intervalle ? 'active' : ''} onClick={() => setIntervalle(i.v)}>
@@ -136,6 +138,12 @@ function Trade() {
             <MenuStops menu={menu} prixActuel={token.prix} ouverte={ouverte} onChoix={definirStops} />
           )}
           {toast && <div className="toast">{toast}</div>}
+          {token?.statut === 'mort' && (
+            <div className="rug-banner">
+              💀 <b>{token.symbole}</b> s&apos;est fait rug à {new Date(token.date_mort).toLocaleTimeString('fr-FR')}.
+              Les positions ont été liquidées.
+            </div>
+          )}
         </div>
         {joueur && (
           <div className="positions-dock">
@@ -158,10 +166,34 @@ function Trade() {
   );
 }
 
+const PHASES = { calme: '😴 Calme', normal: 'Normal', frenesie: '🔥 Frénésie', rug: '💀 RUG EN COURS' };
+const NOUVEAU_MS = 5 * 60 * 1000;
+
+function LigneToken({ t, actif, onClick }) {
+  const nouveau = t.statut !== 'mort' && Date.now() - t.date_creation < NOUVEAU_MS;
+  return (
+    <div className={'token-row' + (actif ? ' active' : '') + (t.statut === 'mort' ? ' mort' : '')} onClick={onClick}>
+      <div>
+        <span className="sym">{t.symbole}</span>
+        {nouveau && <span className="tag-new">NEW</span>}
+        {t.phase === 'frenesie' && <span title="Frénésie"> 🔥</span>}
+        {t.phase === 'rug' && <span className="tag-rug">RUG</span>}
+        {t.statut === 'suspendu' && <span className="tag-susp">SUSPENDU</span>}
+      </div>
+      <div className="px num">{fmtPrix(t.prix)}</div>
+      <div className="name">{t.nom}</div>
+      <div className={'chg num ' + (t.statut === 'mort' ? 'muted' : cls(t.variation))}>
+        {t.statut === 'mort' ? 'mort' : fmtPct(t.variation)}
+      </div>
+    </div>
+  );
+}
+
 // Fil d'activité : les derniers ordres de tous les joueurs
 function FilActivite({ moi }) {
   const { data } = usePoll('/api/activity', 2000);
   const libelle = (a) => {
+    if (a.origine === 'rug') return '💀 se fait liquider (rug) :';
     if (a.origine === 'stop_loss') return 'touche son Stop Loss sur';
     if (a.origine === 'take_profit') return 'prend son Take Profit sur';
     return a.sens === 'achat' ? 'achète' : 'vend';
@@ -182,13 +214,17 @@ function FilActivite({ moi }) {
   );
 }
 
-// Menu du clic droit : placer / retirer stop loss et take profit au prix pointé
+const POURCENTAGES = [25, 50, 75, 100];
+
+// Menu du clic droit : placer / retirer stop loss et take profit au prix pointé,
+// en choisissant le pourcentage de la position vendu au déclenchement
 function MenuStops({ menu, prixActuel, ouverte, onChoix }) {
   const { prix, x, y, largeur, hauteur } = menu;
   const sousLePrix = prix < prixActuel;
+  const [pct, setPct] = useState(100);
   // près d'un bord, le menu s'ouvre de l'autre côté du curseur pour rester visible
-  const decalX = x > largeur - 260 ? '-100%' : '0';
-  const decalY = y > hauteur - 170 ? '-100%' : '0';
+  const decalX = x > largeur - 280 ? '-100%' : '0';
+  const decalY = y > hauteur - 220 ? '-100%' : '0';
   return (
     <div
       className="ctx-menu"
@@ -200,14 +236,22 @@ function MenuStops({ menu, prixActuel, ouverte, onChoix }) {
         <div className="ctx-item disabled">Achète d&apos;abord ce token pour placer un SL / TP</div>
       ) : (
         <>
+          <div className="ctx-pct">
+            <span className="muted">Vendre</span>
+            {POURCENTAGES.map((p) => (
+              <button key={p} className={p === pct ? 'active' : ''} onClick={() => setPct(p)}>
+                {p === 100 ? 'tout' : p + ' %'}
+              </button>
+            ))}
+          </div>
           {sousLePrix ? (
-            <button className="ctx-item" onClick={() => onChoix({ stop_loss: prix })}>
+            <button className="ctx-item" onClick={() => onChoix({ stop_loss: prix, stop_loss_pct: pct })}>
               <span className="dot" style={{ background: 'var(--red)' }} />
               Stop Loss à <b className="num">{fmtPrix(prix)}</b>
               <span className="muted num">{fmtPct(prix / prixActuel - 1)}</span>
             </button>
           ) : (
-            <button className="ctx-item" onClick={() => onChoix({ take_profit: prix })}>
+            <button className="ctx-item" onClick={() => onChoix({ take_profit: prix, take_profit_pct: pct })}>
               <span className="dot" style={{ background: 'var(--blue)' }} />
               Take Profit à <b className="num">{fmtPrix(prix)}</b>
               <span className="muted num">{fmtPct(prix / prixActuel - 1)}</span>
@@ -256,6 +300,7 @@ function PanneauTrade({ token, position, onChange }) {
     action(() => api(`/api/positions/${position.id}/stops`, { method: 'PATCH', body: { [champ]: null } }));
 
   const suspendu = token.statut !== 'actif';
+  const libelleBloque = token.statut === 'mort' ? 'TOKEN MORT 💀' : 'TOKEN SUSPENDU';
   const valeur = position ? valeurPosition(position, token.prix) : null;
   const pnl = position ? pnlLatent(position, token.prix) : null;
 
@@ -279,11 +324,11 @@ function PanneauTrade({ token, position, onChange }) {
             </div>
             <div className="kv">
               <span className="k">Stop Loss</span>
-              <StopValeur valeur={position.stop_loss} couleur="var(--red)" onRetirer={() => retirer('stop_loss')} />
+              <StopValeur valeur={position.stop_loss} pct={position.stop_loss_pct} couleur="var(--red)" onRetirer={() => retirer('stop_loss')} />
             </div>
             <div className="kv">
               <span className="k">Take Profit</span>
-              <StopValeur valeur={position.take_profit} couleur="var(--blue)" onRetirer={() => retirer('take_profit')} />
+              <StopValeur valeur={position.take_profit} pct={position.take_profit_pct} couleur="var(--blue)" onRetirer={() => retirer('take_profit')} />
             </div>
             <p className="muted hint">Clic droit sur le graphique pour placer un SL / TP.</p>
 
@@ -328,7 +373,7 @@ function PanneauTrade({ token, position, onChange }) {
             <span className="num">{fmtQuantite(Number(montant) / token.prix)} {token.symbole}</span>
           </div>
           <button className="btn-buy" disabled={busy || suspendu} onClick={acheter}>
-            {suspendu ? 'TOKEN SUSPENDU' : position ? 'RACHETER' : 'ACHETER'}
+            {suspendu ? libelleBloque : position ? 'RACHETER' : 'ACHETER'}
           </button>
         </div>
       </div>
@@ -337,11 +382,12 @@ function PanneauTrade({ token, position, onChange }) {
   );
 }
 
-function StopValeur({ valeur, couleur, onRetirer }) {
+function StopValeur({ valeur, pct, couleur, onRetirer }) {
   if (valeur == null) return <span className="muted">—</span>;
   return (
     <span className="num" style={{ color: couleur }}>
       {fmtPrix(valeur)}
+      <span className="muted"> · {pct === 100 ? 'tout' : pct + ' %'}</span>
       <button className="btn-x" onClick={onRetirer} title="Retirer">×</button>
     </span>
   );
@@ -384,9 +430,9 @@ function PositionsOuvertes({ positions, prix, onChange }) {
               <td className="right num">{fmtPrix(prix[p.token_id])}</td>
               <td className="right num">{fmtMontant(valeurPosition(p, prix[p.token_id]))}</td>
               <td className={'right num ' + cls(pnl)}>{fmtSigne(pnl)}</td>
-              <td className="right num down">{p.stop_loss != null ? fmtPrix(p.stop_loss) : <span className="muted">—</span>}</td>
+              <td className="right num down">{p.stop_loss != null ? fmtPrix(p.stop_loss) + (p.stop_loss_pct < 100 ? ' (' + p.stop_loss_pct + ' %)' : '') : <span className="muted">—</span>}</td>
               <td className="right num" style={{ color: 'var(--blue)' }}>
-                {p.take_profit != null ? fmtPrix(p.take_profit) : <span className="muted">—</span>}
+                {p.take_profit != null ? fmtPrix(p.take_profit) + (p.take_profit_pct < 100 ? ' (' + p.take_profit_pct + ' %)' : '') : <span className="muted">—</span>}
               </td>
               <td className="right"><button onClick={() => toutVendre(p.id)}>Tout vendre</button></td>
             </tr>

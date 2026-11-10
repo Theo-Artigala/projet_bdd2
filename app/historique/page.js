@@ -12,7 +12,7 @@ export default function HistoriquePage() {
   );
 }
 
-const ORIGINE = { manuel: '', stop_loss: 'Stop Loss', take_profit: 'Take Profit' };
+const ORIGINE = { manuel: '', stop_loss: 'Stop Loss', take_profit: 'Take Profit', rug: 'Liquidation (rug) 💀' };
 
 function Historique() {
   const { data } = usePoll('/api/positions?statut=fermee', 3000);

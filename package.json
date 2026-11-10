@@ -6,7 +6,7 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "dev:preview": "next dev -p 3000"
+    "dev:preview": "next dev -p 3002"
   },
   "dependencies": {
     "lightweight-charts": "^5.0.8",

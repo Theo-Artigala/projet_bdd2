@@ -142,6 +142,9 @@ export default function Chart({ bougies, autres = [], ath, positions = [], ouver
   const prixMoyen = ouverte?.prix_moyen;
   const stopLoss = ouverte?.stop_loss;
   const takeProfit = ouverte?.take_profit;
+  const libelle = (nom, pct) => (pct && pct < 100 ? nom + ' ' + pct + ' %' : nom);
+  const titreSL = libelle('Stop Loss', ouverte?.stop_loss_pct);
+  const titreTP = libelle('Take Profit', ouverte?.take_profit_pct);
   useEffect(() => {
     const r = refs.current;
     if (!r.candles) return;
@@ -152,9 +155,9 @@ export default function Chart({ bougies, autres = [], ath, positions = [], ouver
 
     if (ath) ligne(ath, '#f7a35c', 'All Time High', LineStyle.Dotted);
     if (prixMoyen) ligne(prixMoyen, VERT, 'Prix moyen', LineStyle.Dotted, 2);
-    if (stopLoss) ligne(stopLoss, ROUGE, 'Stop Loss', LineStyle.Dashed, 2);
-    if (takeProfit) ligne(takeProfit, '#4aa8ff', 'Take Profit', LineStyle.Dashed, 2);
-  }, [ath, prixMoyen, stopLoss, takeProfit]);
+    if (stopLoss) ligne(stopLoss, ROUGE, titreSL, LineStyle.Dashed, 2);
+    if (takeProfit) ligne(takeProfit, '#4aa8ff', titreTP, LineStyle.Dashed, 2);
+  }, [ath, prixMoyen, stopLoss, takeProfit, titreSL, titreTP]);
 
   // Badges : d'abord les points des autres (dessous), puis mes badges B / S (dessus)
   const intervalle = bougies?.length > 1 ? bougies[1].time - bougies[0].time : 5;
@@ -163,9 +166,10 @@ export default function Chart({ bougies, autres = [], ath, positions = [], ouver
   for (const o of autres) {
     badges.push({
       cle: 'a' + o.id,
-      type: 'dot',
+      type: 'autre',
       sens: o.sens,
-      titre: o.pseudo + ' · ' + o.sens + ' ' + o.montant.toFixed(2) + ' $',
+      lettre: (o.pseudo[0] || '?').toUpperCase(),
+      titre: o.pseudo + ' · ' + (o.sens === 'achat' ? 'achète' : 'vend') + ' ' + o.montant.toFixed(2) + ' $',
       time: bucket(o.horodatage),
       prix: o.prix,
     });
@@ -188,9 +192,9 @@ export default function Chart({ bougies, autres = [], ath, positions = [], ouver
       <div ref={conteneur} style={{ position: 'absolute', inset: 0 }} />
       <div ref={calque} className="badges">
         {badges.map((b) =>
-          b.type === 'dot' ? (
-            <div key={b.cle} data-badge={b.cle} className={'badge badge-dot ' + b.sens} style={{ display: 'none' }}>
-              <span title={b.titre} />
+          b.type === 'autre' ? (
+            <div key={b.cle} data-badge={b.cle} className={'badge badge-autre ' + b.sens} style={{ display: 'none' }}>
+              <span title={b.titre}>{b.lettre}</span>
             </div>
           ) : (
             <div key={b.cle} data-badge={b.cle} className={'badge badge-' + b.type} style={{ display: 'none' }}>

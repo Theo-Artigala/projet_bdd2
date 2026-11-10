@@ -69,8 +69,11 @@ function Admin() {
             </tr>
           </thead>
           <tbody>
-            {(tokens || []).map((t) => (
-              <tr key={t.id}>
+            {(tokens || [])
+              .slice()
+              .sort((a, b) => (a.statut === 'mort') - (b.statut === 'mort'))
+              .map((t) => (
+              <tr key={t.id} className={t.statut === 'mort' ? 'muted' : ''}>
                 <td><b>{t.symbole}</b></td>
                 <td>{t.nom}</td>
                 <td className="right num">{fmtPrix(t.prix)}</td>
@@ -80,16 +83,22 @@ function Admin() {
                     type="number"
                     step="0.001"
                     defaultValue={t.volatilite}
+                    disabled={t.statut === 'mort'}
                     onBlur={(e) =>
                       Number(e.target.value) !== t.volatilite && modifier(t.id, { volatilite: e.target.value })
                     }
                   />
                 </td>
-                <td className={t.statut === 'actif' ? 'up' : 'down'}>{t.statut}</td>
+                <td className={t.statut === 'actif' ? 'up' : 'down'}>
+                  {t.statut === 'mort' ? '💀 mort' : t.statut}
+                  {t.phase && t.statut !== 'mort' && <span className="muted"> · {t.phase}</span>}
+                </td>
                 <td className="right">
-                  <button onClick={() => modifier(t.id, { statut: t.statut === 'actif' ? 'suspendu' : 'actif' })}>
-                    {t.statut === 'actif' ? 'Suspendre' : 'Réactiver'}
-                  </button>
+                  {t.statut !== 'mort' && (
+                    <button onClick={() => modifier(t.id, { statut: t.statut === 'actif' ? 'suspendu' : 'actif' })}>
+                      {t.statut === 'actif' ? 'Suspendre' : 'Réactiver'}
+                    </button>
+                  )}
                 </td>
               </tr>
             ))}

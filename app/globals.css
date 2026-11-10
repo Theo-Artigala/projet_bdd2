@@ -320,17 +320,79 @@ td.right, th.right { text-align: right; }
 .feed li .moi { color: var(--accent); }
 .feed .t { font-size: 10px; color: #5c5c64; margin-left: 4px; }
 
-/* points des autres joueurs sur le graphique */
-.badge-dot span {
-  left: -4px;
-  top: -4px;
-  width: 8px;
-  height: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.5);
-  box-shadow: none;
-  font-size: 0;
-  opacity: 0.75;
+/* trades des autres joueurs : rond avec l'initiale du pseudo */
+.badge-autre span {
+  left: -10px;
+  top: -10px;
+  width: 20px;
+  height: 20px;
+  font-size: 10px;
+  font-weight: 700;
+  background: #2a2a31;
+  color: #fff;
+  border: 2px solid var(--muted);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+  opacity: 0.9;
   pointer-events: auto;
+  cursor: default;
 }
-.badge-dot.achat span { background: var(--green); }
-.badge-dot.vente span { background: var(--red); }
+.badge-autre.achat span { border-color: var(--green); }
+.badge-autre.vente span { border-color: var(--red); }
+.badge-autre span:hover { opacity: 1; transform: scale(1.15); }
+
+/* choix du % vendu par le SL / TP dans le menu du clic droit */
+.ctx-pct { display: flex; align-items: center; gap: 4px; padding: 4px 10px 8px; border-bottom: 1px solid var(--border); margin-bottom: 4px; }
+.ctx-pct .muted { font-size: 12px; margin-right: 4px; }
+.ctx-pct button { padding: 3px 7px; font-size: 12px; }
+.ctx-pct button.active { border-color: var(--accent); background: rgba(139, 123, 255, 0.15); }
+
+/* ----- Cycle de vie des tokens ----- */
+.token-list { overflow-y: auto; max-height: 58%; flex: none; }
+.token-row.mort { opacity: 0.5; }
+.token-row.mort .sym { text-decoration: line-through; }
+.cimetiere {
+  padding: 8px 14px 4px;
+  font-size: 11px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border-bottom: 1px solid var(--border);
+}
+.tag-new {
+  font-size: 10px;
+  font-weight: 700;
+  color: #04130c;
+  background: var(--green);
+  border-radius: 4px;
+  padding: 0 4px;
+  margin-left: 6px;
+}
+.tag-rug {
+  font-size: 10px;
+  font-weight: 700;
+  color: #fff;
+  background: var(--red);
+  border-radius: 4px;
+  padding: 0 4px;
+  margin-left: 6px;
+  animation: clignote 0.6s steps(2) infinite;
+}
+@keyframes clignote { 50% { opacity: 0.3; } }
+.phase { font-size: 12px; padding: 2px 8px; border-radius: 999px; border: 1px solid var(--border); color: var(--muted); }
+.phase-frenesie { color: #ffb36b; border-color: rgba(247, 163, 92, 0.5); background: rgba(247, 163, 92, 0.1); }
+.phase-calme { color: #8fb8ff; border-color: rgba(74, 168, 255, 0.35); }
+.phase-rug { color: #fff; background: var(--red); border-color: var(--red); animation: clignote 0.6s steps(2) infinite; }
+.rug-banner {
+  position: absolute;
+  z-index: 5;
+  left: 50%;
+  bottom: 16px;
+  transform: translateX(-50%);
+  background: rgba(20, 8, 10, 0.92);
+  border: 1px solid var(--red);
+  color: var(--text);
+  padding: 10px 16px;
+  border-radius: 8px;
+  font-size: 13px;
+  white-space: nowrap;
+}

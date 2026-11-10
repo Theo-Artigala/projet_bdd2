@@ -18,7 +18,7 @@
       "y": 60,
       "color": "#7c6cff",
       "fictive": false,
-      "note": "",
+      "note": "Pseudo unique sans tenir compte des majuscules. email facultatif (inscription par pseudo). bot = joueur automatique (rôle joueur uniquement).",
       "props": [
         {
           "id": "p_util_id",
@@ -30,7 +30,7 @@
         {
           "id": "p_util_pseudo",
           "name": "pseudo",
-          "type": "VARCHAR(30)",
+          "type": "VARCHAR(20)",
           "pk": false,
           "mandatory": true
         },
@@ -39,12 +39,19 @@
           "name": "email",
           "type": "VARCHAR(255)",
           "pk": false,
-          "mandatory": true
+          "mandatory": false
         },
         {
           "id": "p_util_role",
           "name": "role",
           "type": "VARCHAR(10)",
+          "pk": false,
+          "mandatory": true
+        },
+        {
+          "id": "p_util_bot",
+          "name": "bot",
+          "type": "BOOLEAN",
           "pk": false,
           "mandatory": true
         },
@@ -120,9 +127,23 @@
           "mandatory": false
         },
         {
+          "id": "p_pos_sl_pct",
+          "name": "stop_loss_pct",
+          "type": "SMALLINT",
+          "pk": false,
+          "mandatory": false
+        },
+        {
           "id": "p_pos_tp",
           "name": "take_profit",
           "type": "DECIMAL(18,8)",
+          "pk": false,
+          "mandatory": false
+        },
+        {
+          "id": "p_pos_tp_pct",
+          "name": "take_profit_pct",
+          "type": "SMALLINT",
           "pk": false,
           "mandatory": false
         },
@@ -156,7 +177,7 @@
       "y": 60,
       "color": "#7c6cff",
       "fictive": false,
-      "note": "",
+      "note": "statut : actif, suspendu ou mort. Cycle de vie : naissance -> vie (phases calme / normal / frénésie, non stockées) -> éventuellement rug et mort.",
       "props": [
         {
           "id": "p_tok_id",
@@ -206,6 +227,13 @@
           "type": "DATETIME",
           "pk": false,
           "mandatory": true
+        },
+        {
+          "id": "p_tok_date_mort",
+          "name": "date_mort",
+          "type": "DATETIME",
+          "pk": false,
+          "mandatory": false
         }
       ]
     },
@@ -233,6 +261,13 @@
           "mandatory": true
         },
         {
+          "id": "p_cot_volume",
+          "name": "volume",
+          "type": "DECIMAL(16,2)",
+          "pk": false,
+          "mandatory": true
+        },
+        {
           "id": "p_cot_date",
           "name": "horodatage",
           "type": "DATETIME",
@@ -248,7 +283,7 @@
       "y": 500,
       "color": "#7c6cff",
       "fictive": false,
-      "note": "Un achat ou une vente. origine = manuel, stop_loss ou take_profit.",
+      "note": "Un achat ou une vente. origine = manuel, stop_loss, take_profit ou rug (liquidation).",
       "props": [
         {
           "id": "p_ord_id",
@@ -553,7 +588,7 @@
     {
       "id": "r_rg4",
       "name": "RG4",
-      "text": "Impossible de passer un ordre sur un token suspendu.",
+      "text": "Impossible de passer un ordre sur un token suspendu ou mort.",
       "sql": ""
     },
     {
@@ -571,7 +606,19 @@
     {
       "id": "r_rg7",
       "name": "RG7",
-      "text": "À chaque nouvelle cotation, une position dont le prix passe sous le stop loss ou au-dessus du take profit est vendue à 100 % automatiquement.",
+      "text": "À chaque nouvelle cotation, une position dont le prix passe sous son stop loss ou au-dessus de son take profit est vendue automatiquement du pourcentage choisi (stop_loss_pct / take_profit_pct, 100 % par défaut). S'il reste des tokens, le SL / TP déclenché est retiré.",
+      "sql": ""
+    },
+    {
+      "id": "r_rg8",
+      "name": "RG8",
+      "text": "Rug : un token actif depuis plus de 2 minutes a une faible probabilité par seconde de s'effondrer (environ −90 % en quelques secondes). À la fin du rug, toutes les positions encore ouvertes sur ce token sont vendues à 100 % au prix final (origine rug), puis le token passe au statut mort et ne reçoit plus de cotations.",
+      "sql": ""
+    },
+    {
+      "id": "r_rg9",
+      "name": "RG9",
+      "text": "Naissance : il y a toujours au moins 5 tokens vivants ; en dessous, le moteur crée immédiatement un nouveau token (nom, symbole, volatilité et prix de départ aléatoires). Jusqu'à 8 tokens, d'autres naissent aussi spontanément de temps en temps.",
       "sql": ""
     }
   ],
