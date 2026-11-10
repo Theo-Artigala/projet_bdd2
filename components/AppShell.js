@@ -46,6 +46,7 @@ export default function AppShell({ children, roles }) {
           ))}
         </nav>
         <div className="header-right">
+          <span className="en-ligne"><span className="live-dot" />{data.en_ligne} en ligne</span>
           {data.solde != null && <span className="solde">{fmtMontant(data.solde)}</span>}
           <span>{user.pseudo}</span>
           <span className="role-badge">{user.role}</span>

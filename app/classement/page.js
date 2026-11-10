@@ -49,7 +49,7 @@ function Classement() {
           <thead>
             <tr>
               <th>Token</th>
-              <th className="right">Volume misé</th><th className="right">Positions</th>
+              <th className="right">Volume échangé</th><th className="right">Positions</th>
               <th className="right">Ouvertes</th><th className="right">Volatilité observée</th>
             </tr>
           </thead>
@@ -57,7 +57,7 @@ function Classement() {
             {data.tokens.map((t) => (
               <tr key={t.token_id}>
                 <td><b>{t.symbole}</b></td>
-                <td className="right num">{fmtMontant(t.volume_mise)}</td>
+                <td className="right num">{fmtMontant(t.volume)}</td>
                 <td className="right num">{t.nb_positions}</td>
                 <td className="right num">{t.positions_ouvertes}</td>
                 <td className="right num">{(t.volatilite_observee * 100).toFixed(2)} %</td>

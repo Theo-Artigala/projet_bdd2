@@ -1,9 +1,8 @@
-import { route, exigerUtilisateur, lireJson } from '@/lib/api';
-import { creerToken } from '@/lib/store';
+import { route, commeUtilisateur, lireJson } from '@/lib/api';
 
 export const dynamic = 'force-dynamic';
 
 export const POST = route(async (req) => {
-  await exigerUtilisateur('admin');
-  return creerToken(await lireJson(req));
+  const body = await lireJson(req);
+  return commeUtilisateur(['admin'], (dao) => dao.tokens.create(body));
 });

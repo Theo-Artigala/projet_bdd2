@@ -20,43 +20,133 @@
       "fictive": false,
       "note": "",
       "props": [
-        { "id": "p_util_id", "name": "id", "type": "INT", "pk": true, "mandatory": true },
-        { "id": "p_util_pseudo", "name": "pseudo", "type": "VARCHAR(30)", "pk": false, "mandatory": true },
-        { "id": "p_util_email", "name": "email", "type": "VARCHAR(255)", "pk": false, "mandatory": true },
-        { "id": "p_util_role", "name": "role", "type": "VARCHAR(10)", "pk": false, "mandatory": true },
-        { "id": "p_util_date", "name": "date_inscription", "type": "DATETIME", "pk": false, "mandatory": true }
+        {
+          "id": "p_util_id",
+          "name": "id",
+          "type": "INT",
+          "pk": true,
+          "mandatory": true
+        },
+        {
+          "id": "p_util_pseudo",
+          "name": "pseudo",
+          "type": "VARCHAR(30)",
+          "pk": false,
+          "mandatory": true
+        },
+        {
+          "id": "p_util_email",
+          "name": "email",
+          "type": "VARCHAR(255)",
+          "pk": false,
+          "mandatory": true
+        },
+        {
+          "id": "p_util_role",
+          "name": "role",
+          "type": "VARCHAR(10)",
+          "pk": false,
+          "mandatory": true
+        },
+        {
+          "id": "p_util_date",
+          "name": "date_inscription",
+          "type": "DATETIME",
+          "pk": false,
+          "mandatory": true
+        }
       ]
     },
     {
       "id": "e_portefeuille",
       "name": "Portefeuille",
       "x": 60,
-      "y": 440,
+      "y": 480,
       "color": "#7c6cff",
       "fictive": false,
       "note": "",
       "props": [
-        { "id": "p_port_id", "name": "id", "type": "INT", "pk": true, "mandatory": true },
-        { "id": "p_port_solde", "name": "solde", "type": "DECIMAL(14,2)", "pk": false, "mandatory": true }
+        {
+          "id": "p_port_id",
+          "name": "id",
+          "type": "INT",
+          "pk": true,
+          "mandatory": true
+        },
+        {
+          "id": "p_port_solde",
+          "name": "solde",
+          "type": "DECIMAL(14,2)",
+          "pk": false,
+          "mandatory": true
+        }
       ]
     },
     {
       "id": "e_position",
       "name": "Position",
       "x": 530,
-      "y": 40,
+      "y": 30,
       "color": "#7c6cff",
       "fictive": false,
-      "note": "Table d'association N-N entre Utilisateur et Token (un trade). Identifiant propre car un joueur peut trader plusieurs fois le même token.",
+      "note": "Table d'association N-N entre Utilisateur et Token. Ne stocke que l'état courant (quantite, cout) ; totaux et PnL calculés à partir des ordres (3FN).",
       "props": [
-        { "id": "p_pos_id", "name": "id", "type": "INT", "pk": true, "mandatory": true },
-        { "id": "p_pos_mise", "name": "mise", "type": "DECIMAL(14,2)", "pk": false, "mandatory": true },
-        { "id": "p_pos_pe", "name": "prix_entree", "type": "DECIMAL(18,8)", "pk": false, "mandatory": true },
-        { "id": "p_pos_ps", "name": "prix_sortie", "type": "DECIMAL(18,8)", "pk": false, "mandatory": false },
-        { "id": "p_pos_de", "name": "date_entree", "type": "DATETIME", "pk": false, "mandatory": true },
-        { "id": "p_pos_ds", "name": "date_sortie", "type": "DATETIME", "pk": false, "mandatory": false },
-        { "id": "p_pos_statut", "name": "statut", "type": "VARCHAR(10)", "pk": false, "mandatory": true },
-        { "id": "p_pos_pnl", "name": "pnl", "type": "DECIMAL(14,2)", "pk": false, "mandatory": false }
+        {
+          "id": "p_pos_id",
+          "name": "id",
+          "type": "INT",
+          "pk": true,
+          "mandatory": true
+        },
+        {
+          "id": "p_pos_quantite",
+          "name": "quantite",
+          "type": "DECIMAL(30,12)",
+          "pk": false,
+          "mandatory": true
+        },
+        {
+          "id": "p_pos_cout",
+          "name": "cout",
+          "type": "DECIMAL(14,2)",
+          "pk": false,
+          "mandatory": true
+        },
+        {
+          "id": "p_pos_sl",
+          "name": "stop_loss",
+          "type": "DECIMAL(18,8)",
+          "pk": false,
+          "mandatory": false
+        },
+        {
+          "id": "p_pos_tp",
+          "name": "take_profit",
+          "type": "DECIMAL(18,8)",
+          "pk": false,
+          "mandatory": false
+        },
+        {
+          "id": "p_pos_statut",
+          "name": "statut",
+          "type": "VARCHAR(10)",
+          "pk": false,
+          "mandatory": true
+        },
+        {
+          "id": "p_pos_do",
+          "name": "date_ouverture",
+          "type": "DATETIME",
+          "pk": false,
+          "mandatory": true
+        },
+        {
+          "id": "p_pos_df",
+          "name": "date_fermeture",
+          "type": "DATETIME",
+          "pk": false,
+          "mandatory": false
+        }
       ]
     },
     {
@@ -68,41 +158,193 @@
       "fictive": false,
       "note": "",
       "props": [
-        { "id": "p_tok_id", "name": "id", "type": "INT", "pk": true, "mandatory": true },
-        { "id": "p_tok_nom", "name": "nom", "type": "VARCHAR(50)", "pk": false, "mandatory": true },
-        { "id": "p_tok_symbole", "name": "symbole", "type": "VARCHAR(10)", "pk": false, "mandatory": true },
-        { "id": "p_tok_vol", "name": "volatilite", "type": "DECIMAL(5,4)", "pk": false, "mandatory": true },
-        { "id": "p_tok_statut", "name": "statut", "type": "VARCHAR(10)", "pk": false, "mandatory": true },
-        { "id": "p_tok_date", "name": "date_creation", "type": "DATETIME", "pk": false, "mandatory": true }
+        {
+          "id": "p_tok_id",
+          "name": "id",
+          "type": "INT",
+          "pk": true,
+          "mandatory": true
+        },
+        {
+          "id": "p_tok_nom",
+          "name": "nom",
+          "type": "VARCHAR(50)",
+          "pk": false,
+          "mandatory": true
+        },
+        {
+          "id": "p_tok_symbole",
+          "name": "symbole",
+          "type": "VARCHAR(10)",
+          "pk": false,
+          "mandatory": true
+        },
+        {
+          "id": "p_tok_vol",
+          "name": "volatilite",
+          "type": "DECIMAL(5,4)",
+          "pk": false,
+          "mandatory": true
+        },
+        {
+          "id": "p_tok_prix0",
+          "name": "prix_initial",
+          "type": "DECIMAL(18,8)",
+          "pk": false,
+          "mandatory": true
+        },
+        {
+          "id": "p_tok_statut",
+          "name": "statut",
+          "type": "VARCHAR(10)",
+          "pk": false,
+          "mandatory": true
+        },
+        {
+          "id": "p_tok_date",
+          "name": "date_creation",
+          "type": "DATETIME",
+          "pk": false,
+          "mandatory": true
+        }
       ]
     },
     {
       "id": "e_cotation",
       "name": "Cotation",
       "x": 1040,
-      "y": 440,
+      "y": 480,
       "color": "#7c6cff",
       "fictive": false,
       "note": "",
       "props": [
-        { "id": "p_cot_id", "name": "id", "type": "INT", "pk": true, "mandatory": true },
-        { "id": "p_cot_prix", "name": "prix", "type": "DECIMAL(18,8)", "pk": false, "mandatory": true },
-        { "id": "p_cot_date", "name": "horodatage", "type": "DATETIME", "pk": false, "mandatory": true }
+        {
+          "id": "p_cot_id",
+          "name": "id",
+          "type": "INT",
+          "pk": true,
+          "mandatory": true
+        },
+        {
+          "id": "p_cot_prix",
+          "name": "prix",
+          "type": "DECIMAL(18,8)",
+          "pk": false,
+          "mandatory": true
+        },
+        {
+          "id": "p_cot_date",
+          "name": "horodatage",
+          "type": "DATETIME",
+          "pk": false,
+          "mandatory": true
+        }
+      ]
+    },
+    {
+      "id": "e_ordre",
+      "name": "Ordre",
+      "x": 600,
+      "y": 500,
+      "color": "#7c6cff",
+      "fictive": false,
+      "note": "Un achat ou une vente. origine = manuel, stop_loss ou take_profit.",
+      "props": [
+        {
+          "id": "p_ord_id",
+          "name": "id",
+          "type": "INT",
+          "pk": true,
+          "mandatory": true
+        },
+        {
+          "id": "p_ord_sens",
+          "name": "sens",
+          "type": "VARCHAR(5)",
+          "pk": false,
+          "mandatory": true
+        },
+        {
+          "id": "p_ord_quantite",
+          "name": "quantite",
+          "type": "DECIMAL(30,12)",
+          "pk": false,
+          "mandatory": true
+        },
+        {
+          "id": "p_ord_prix",
+          "name": "prix",
+          "type": "DECIMAL(18,8)",
+          "pk": false,
+          "mandatory": true
+        },
+        {
+          "id": "p_ord_montant",
+          "name": "montant",
+          "type": "DECIMAL(14,2)",
+          "pk": false,
+          "mandatory": true
+        },
+        {
+          "id": "p_ord_cout_vendu",
+          "name": "cout_vendu",
+          "type": "DECIMAL(14,2)",
+          "pk": false,
+          "mandatory": false
+        },
+        {
+          "id": "p_ord_origine",
+          "name": "origine",
+          "type": "VARCHAR(12)",
+          "pk": false,
+          "mandatory": true
+        },
+        {
+          "id": "p_ord_date",
+          "name": "horodatage",
+          "type": "DATETIME",
+          "pk": false,
+          "mandatory": true
+        }
       ]
     },
     {
       "id": "e_mouvement",
       "name": "Mouvement",
-      "x": 530,
-      "y": 440,
+      "x": 300,
+      "y": 760,
       "color": "#7c6cff",
       "fictive": false,
       "note": "",
       "props": [
-        { "id": "p_mvt_id", "name": "id", "type": "INT", "pk": true, "mandatory": true },
-        { "id": "p_mvt_montant", "name": "montant", "type": "DECIMAL(14,2)", "pk": false, "mandatory": true },
-        { "id": "p_mvt_type", "name": "type", "type": "VARCHAR(10)", "pk": false, "mandatory": true },
-        { "id": "p_mvt_date", "name": "horodatage", "type": "DATETIME", "pk": false, "mandatory": true }
+        {
+          "id": "p_mvt_id",
+          "name": "id",
+          "type": "INT",
+          "pk": true,
+          "mandatory": true
+        },
+        {
+          "id": "p_mvt_montant",
+          "name": "montant",
+          "type": "DECIMAL(14,2)",
+          "pk": false,
+          "mandatory": true
+        },
+        {
+          "id": "p_mvt_type",
+          "name": "type",
+          "type": "VARCHAR(10)",
+          "pk": false,
+          "mandatory": true
+        },
+        {
+          "id": "p_mvt_date",
+          "name": "horodatage",
+          "type": "DATETIME",
+          "pk": false,
+          "mandatory": true
+        }
       ]
     }
   ],
@@ -111,12 +353,24 @@
       "id": "a_possede",
       "name": "Possede",
       "x": 90,
-      "y": 320,
+      "y": 340,
       "color": "#35d0e0",
       "note": "",
       "legs": [
-        { "id": "l_possede_util", "ent": "e_utilisateur", "card": "0,1", "role": "", "relative": false },
-        { "id": "l_possede_port", "ent": "e_portefeuille", "card": "1,1", "role": "", "relative": false }
+        {
+          "id": "l_possede_util",
+          "ent": "e_utilisateur",
+          "card": "0,1",
+          "role": "",
+          "relative": false
+        },
+        {
+          "id": "l_possede_port",
+          "ent": "e_portefeuille",
+          "card": "1,1",
+          "role": "",
+          "relative": false
+        }
       ],
       "props": []
     },
@@ -128,8 +382,20 @@
       "color": "#35d0e0",
       "note": "",
       "legs": [
-        { "id": "l_prend_util", "ent": "e_utilisateur", "card": "0,n", "role": "", "relative": false },
-        { "id": "l_prend_pos", "ent": "e_position", "card": "1,1", "role": "", "relative": false }
+        {
+          "id": "l_prend_util",
+          "ent": "e_utilisateur",
+          "card": "0,n",
+          "role": "",
+          "relative": false
+        },
+        {
+          "id": "l_prend_pos",
+          "ent": "e_position",
+          "card": "1,1",
+          "role": "",
+          "relative": false
+        }
       ],
       "props": []
     },
@@ -141,8 +407,20 @@
       "color": "#35d0e0",
       "note": "",
       "legs": [
-        { "id": "l_porte_pos", "ent": "e_position", "card": "1,1", "role": "", "relative": false },
-        { "id": "l_porte_tok", "ent": "e_token", "card": "0,n", "role": "", "relative": false }
+        {
+          "id": "l_porte_pos",
+          "ent": "e_position",
+          "card": "1,1",
+          "role": "",
+          "relative": false
+        },
+        {
+          "id": "l_porte_tok",
+          "ent": "e_token",
+          "card": "0,n",
+          "role": "",
+          "relative": false
+        }
       ],
       "props": []
     },
@@ -150,38 +428,99 @@
       "id": "a_concerne",
       "name": "Concerne",
       "x": 1080,
-      "y": 330,
+      "y": 360,
       "color": "#35d0e0",
       "note": "",
       "legs": [
-        { "id": "l_concerne_tok", "ent": "e_token", "card": "0,n", "role": "", "relative": false },
-        { "id": "l_concerne_cot", "ent": "e_cotation", "card": "1,1", "role": "", "relative": false }
+        {
+          "id": "l_concerne_tok",
+          "ent": "e_token",
+          "card": "0,n",
+          "role": "",
+          "relative": false
+        },
+        {
+          "id": "l_concerne_cot",
+          "ent": "e_cotation",
+          "card": "1,1",
+          "role": "",
+          "relative": false
+        }
+      ],
+      "props": []
+    },
+    {
+      "id": "a_contient",
+      "name": "Contient",
+      "x": 640,
+      "y": 400,
+      "color": "#35d0e0",
+      "note": "",
+      "legs": [
+        {
+          "id": "l_contient_pos",
+          "ent": "e_position",
+          "card": "1,n",
+          "role": "",
+          "relative": false
+        },
+        {
+          "id": "l_contient_ord",
+          "ent": "e_ordre",
+          "card": "1,1",
+          "role": "",
+          "relative": false
+        }
       ],
       "props": []
     },
     {
       "id": "a_affecte",
       "name": "Affecte",
-      "x": 330,
-      "y": 480,
+      "x": 110,
+      "y": 680,
       "color": "#35d0e0",
       "note": "",
       "legs": [
-        { "id": "l_affecte_port", "ent": "e_portefeuille", "card": "0,n", "role": "", "relative": false },
-        { "id": "l_affecte_mvt", "ent": "e_mouvement", "card": "1,1", "role": "", "relative": false }
+        {
+          "id": "l_affecte_port",
+          "ent": "e_portefeuille",
+          "card": "0,n",
+          "role": "",
+          "relative": false
+        },
+        {
+          "id": "l_affecte_mvt",
+          "ent": "e_mouvement",
+          "card": "1,1",
+          "role": "",
+          "relative": false
+        }
       ],
       "props": []
     },
     {
-      "id": "a_lie_a",
-      "name": "Lie_a",
-      "x": 570,
-      "y": 330,
+      "id": "a_genere",
+      "name": "Genere",
+      "x": 520,
+      "y": 760,
       "color": "#35d0e0",
       "note": "",
       "legs": [
-        { "id": "l_lie_pos", "ent": "e_position", "card": "0,n", "role": "", "relative": false },
-        { "id": "l_lie_mvt", "ent": "e_mouvement", "card": "0,1", "role": "", "relative": false }
+        {
+          "id": "l_genere_ord",
+          "ent": "e_ordre",
+          "card": "0,1",
+          "role": "",
+          "relative": false
+        },
+        {
+          "id": "l_genere_mvt",
+          "ent": "e_mouvement",
+          "card": "0,1",
+          "role": "",
+          "relative": false
+        }
       ],
       "props": []
     }
@@ -196,31 +535,43 @@
     {
       "id": "r_rg1",
       "name": "RG1",
-      "text": "Une position ne peut être ouverte que si la mise est inférieure ou égale au solde du portefeuille ; le portefeuille est alors débité.",
+      "text": "Un achat n'est accepté que si son montant est couvert par le solde du portefeuille ; le portefeuille est alors débité.",
       "sql": ""
     },
     {
       "id": "r_rg2",
       "name": "RG2",
-      "text": "Les prix d'entrée et de sortie d'une position sont imposés par le serveur : dernière cotation du token au moment de l'action.",
+      "text": "Le prix d'un ordre (achat ou vente) est imposé par le serveur : dernière cotation du token au moment de l'ordre.",
       "sql": ""
     },
     {
       "id": "r_rg3",
       "name": "RG3",
-      "text": "À la fermeture, pnl = mise × (prix_sortie / prix_entree − 1) ; le portefeuille est crédité de mise + pnl et la position devient non modifiable.",
+      "text": "Chaque ordre met à jour la position : un achat ajoute quantité et coût ; une vente de x % retire x % de la quantité et du coût (enregistré dans cout_vendu). À quantité nulle, la position est fermée. PnL réalisé = somme(montant − cout_vendu) des ventes.",
       "sql": ""
     },
     {
       "id": "r_rg4",
       "name": "RG4",
-      "text": "Impossible d'ouvrir une position sur un token suspendu.",
+      "text": "Impossible de passer un ordre sur un token suspendu.",
       "sql": ""
     },
     {
       "id": "r_rg5",
       "name": "RG5",
-      "text": "Un joueur ne peut avoir qu'une seule position ouverte par token.",
+      "text": "Un joueur a au plus une position ouverte par token : racheter renforce la position existante.",
+      "sql": ""
+    },
+    {
+      "id": "r_rg6",
+      "name": "RG6",
+      "text": "Le stop loss doit être sous le prix actuel et le take profit au-dessus, au moment où ils sont placés.",
+      "sql": ""
+    },
+    {
+      "id": "r_rg7",
+      "name": "RG7",
+      "text": "À chaque nouvelle cotation, une position dont le prix passe sous le stop loss ou au-dessus du take profit est vendue à 100 % automatiquement.",
       "sql": ""
     }
   ],

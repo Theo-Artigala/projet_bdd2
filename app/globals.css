@@ -10,12 +10,15 @@
   --red: #f6465d;
   --red-bg: rgba(246, 70, 93, 0.12);
   --ath: #f7a35c;
+  --blue: #4aa8ff;
   --accent: #8b7bff;
   --radius: 8px;
   --mono: ui-monospace, 'SF Mono', 'Cascadia Mono', Consolas, monospace;
 }
 
 * { box-sizing: border-box; }
+
+html { color-scheme: dark; }
 
 html, body {
   margin: 0;
@@ -160,6 +163,27 @@ td.right, th.right { text-align: right; }
 .intervals button { padding: 3px 9px; font-size: 12px; }
 .intervals button.active { border-color: var(--accent); color: var(--text); }
 .chart-wrap { flex: 1; min-height: 300px; position: relative; }
+/* Badges B (entrée) / S (sortie) posés sur le graphique */
+.badges { position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 3; }
+.badge { position: absolute; left: 0; top: 0; width: 0; height: 0; }
+.badge span {
+  position: absolute;
+  left: -13px;
+  top: -13px;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: 13px;
+  color: #fff;
+  border: 2px solid rgba(255, 255, 255, 0.85);
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.35), 0 2px 8px rgba(0, 0, 0, 0.5);
+}
+.badge-B span { background: var(--green); }
+.badge-S span { background: var(--red); }
+
 .positions-dock { border-top: 1px solid var(--border); max-height: 34%; overflow: auto; }
 .positions-dock h3 { margin: 0; padding: 10px 16px; font-size: 13px; color: var(--muted); font-weight: 600; }
 
@@ -197,3 +221,116 @@ td.right, th.right { text-align: right; }
   .form-row { grid-template-columns: 1fr 1fr; }
   .header { gap: 12px; overflow-x: auto; }
 }
+
+/* ----- Vente en pourcentage ----- */
+.sell-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; margin-top: 12px; }
+.btn-sell-pct {
+  display: grid;
+  gap: 2px;
+  padding: 8px 6px;
+  background: var(--red-bg);
+  border-color: rgba(246, 70, 93, 0.35);
+  color: var(--red);
+  text-align: center;
+}
+.btn-sell-pct span { font-size: 11px; color: var(--muted); }
+.btn-sell-pct:hover:not(:disabled) { background: rgba(246, 70, 93, 0.22); border-color: var(--red); }
+.btn-x {
+  border: none;
+  background: none;
+  color: var(--muted);
+  padding: 0 0 0 6px;
+  font-size: 15px;
+  line-height: 1;
+}
+.btn-x:hover:not(:disabled) { color: var(--text); background: none; }
+.hint { font-size: 12px; margin: 8px 0 0; }
+
+/* ----- Menu du clic droit sur le graphique ----- */
+.ctx-menu {
+  position: absolute;
+  z-index: 10;
+  min-width: 230px;
+  background: var(--panel-2);
+  border: 1px solid #34343c;
+  border-radius: 8px;
+  padding: 4px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+}
+.ctx-title { padding: 6px 10px; font-size: 12px; color: var(--muted); border-bottom: 1px solid var(--border); margin-bottom: 4px; }
+.ctx-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  border: none;
+  background: none;
+  text-align: left;
+  padding: 8px 10px;
+  border-radius: 6px;
+}
+.ctx-item .muted { margin-left: auto; font-size: 12px; }
+.ctx-item:hover:not(.disabled) { background: #26262c; }
+.ctx-item.disabled { color: var(--muted); font-size: 13px; cursor: default; }
+.dot { width: 8px; height: 8px; border-radius: 50%; flex: none; }
+
+.toast {
+  position: absolute;
+  z-index: 10;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--red);
+  color: #fff;
+  padding: 8px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.sub-row td { background: var(--bg); font-size: 13px; padding-top: 6px; padding-bottom: 6px; }
+
+/* ----- Multijoueur ----- */
+.live-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 0 3px var(--green-bg);
+  margin-right: 4px;
+  vertical-align: 1px;
+}
+.en-ligne { font-size: 12px; color: var(--muted); white-space: nowrap; }
+.host-sep {
+  margin: 22px 0 10px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--muted);
+}
+.login-box .user-list { max-height: 260px; overflow-y: auto; margin-top: 0; }
+
+.tokens { display: flex; flex-direction: column; }
+.feed { border-top: 1px solid var(--border); flex: 1; min-height: 0; display: flex; flex-direction: column; }
+.feed h3 { margin: 0; padding: 10px 14px; font-size: 12px; color: var(--muted); font-weight: 600; }
+.feed ul { list-style: none; margin: 0; padding: 0 0 8px; overflow-y: auto; flex: 1; }
+.feed li { padding: 5px 14px; font-size: 12px; line-height: 1.4; color: var(--muted); }
+.feed li b { color: var(--text); font-weight: 600; }
+.feed li .moi { color: var(--accent); }
+.feed .t { font-size: 10px; color: #5c5c64; margin-left: 4px; }
+
+/* points des autres joueurs sur le graphique */
+.badge-dot span {
+  left: -4px;
+  top: -4px;
+  width: 8px;
+  height: 8px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: none;
+  font-size: 0;
+  opacity: 0.75;
+  pointer-events: auto;
+}
+.badge-dot.achat span { background: var(--green); }
+.badge-dot.vente span { background: var(--red); }

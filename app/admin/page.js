@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import AppShell from '@/components/AppShell';
-import { api, usePoll, fmtPrix, fmtMontant, fmtSigne, fmtDate, cls, pnlLatent } from '@/lib/client';
+import { api, usePoll, fmtPrix, fmtMontant, fmtSigne, fmtDate, fmtQuantite, cls, pnlLatent, valeurPosition } from '@/lib/client';
 
 export default function AdminPage() {
   return (
@@ -106,7 +106,7 @@ function Admin() {
             <thead>
               <tr>
                 <th>Joueur</th><th>Token</th><th>Ouverte le</th>
-                <th className="right">Mise</th><th className="right">Entrée</th><th className="right">PnL latent</th>
+                <th className="right">Quantité</th><th className="right">Prix moyen</th><th className="right">Valeur</th><th className="right">PnL latent</th>
               </tr>
             </thead>
             <tbody>
@@ -116,9 +116,10 @@ function Admin() {
                   <tr key={p.id}>
                     <td>{p.pseudo}</td>
                     <td><b>{p.symbole}</b></td>
-                    <td className="muted">{fmtDate(p.date_entree)}</td>
-                    <td className="right num">{fmtMontant(p.mise)}</td>
-                    <td className="right num">{fmtPrix(p.prix_entree)}</td>
+                    <td className="muted">{fmtDate(p.date_ouverture)}</td>
+                    <td className="right num">{fmtQuantite(p.quantite)}</td>
+                    <td className="right num">{fmtPrix(p.prix_moyen)}</td>
+                    <td className="right num">{fmtMontant(valeurPosition(p, prix[p.token_id]))}</td>
                     <td className={'right num ' + cls(pnl)}>{fmtSigne(pnl)}</td>
                   </tr>
                 );

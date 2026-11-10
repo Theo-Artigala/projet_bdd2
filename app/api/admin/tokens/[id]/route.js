@@ -1,10 +1,9 @@
-import { route, exigerUtilisateur, lireJson } from '@/lib/api';
-import { modifierToken } from '@/lib/store';
+import { route, commeUtilisateur, lireJson } from '@/lib/api';
 
 export const dynamic = 'force-dynamic';
 
 export const PATCH = route(async (req, { params }) => {
-  await exigerUtilisateur('admin');
   const { id } = await params;
-  return modifierToken(Number(id), await lireJson(req));
+  const body = await lireJson(req);
+  return commeUtilisateur(['admin'], (dao) => dao.tokens.update(Number(id), body));
 });
