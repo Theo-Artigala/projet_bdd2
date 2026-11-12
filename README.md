@@ -97,10 +97,10 @@ filtrera les lignes.
 
 Chaque seconde, pour chaque token actif :
 
-- **Phase** : le token passe au hasard d'une phase à l'autre (calme ×0,3, normal ×1, frénésie ×3 sur la volatilité ; le volume suit : ×0,25, ×1, ×5).
+- **Phase** : le token passe au hasard d'une phase à l'autre. Tirage : calme 30 %, normal 38 %, frénésie 32 %. Volatilité ×0,3 / ×1 / ×3, volume ×0,25 / ×1 / ×10. Durées : calme 1 min 30 à 5 min, normal 1 à 4 min, frénésie 1 à 4 min.
 - **Prix** : `prix = prix × e^(σ·Z)` avec Z tiré d'une loi normale (Box-Muller) et σ = volatilité du token × phase ;
-  de temps en temps un saut (pump ou dump) de 15 à 50 % en log, plus fréquent en frénésie ; léger rappel si le token
-  s'éloigne trop de son prix de départ (÷20 ou ×50).
+  de temps en temps un saut (pump ou dump) de 15 à 50 % en log, plus fréquent en frénésie. Aucun garde-fou : un token peut monter
+  ou chuter sans limite (plancher technique à 0,00000001, la plus petite valeur que la colonne `prix` peut stocker).
 - **Volume** : le « reste du marché » échange un montant aléatoire qui dépend de la phase et grimpe quand le prix bouge fort ;
   les ordres des joueurs s'y ajoutent.
 - **Rug** : probabilité ≈ 1,1 × 10⁻⁴ par seconde (doublée en frénésie), soit environ 1 token sur 3 qui meurt dans l'heure.
